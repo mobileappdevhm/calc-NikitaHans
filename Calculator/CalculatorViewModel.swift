@@ -1,5 +1,5 @@
 //
-//  ViewModel.swift
+//  CalculatorViewModel.swift
 //  Calculator
 //
 //  Created by Nikita Hans on 17.03.18.
