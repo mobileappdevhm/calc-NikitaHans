@@ -6,4 +6,6 @@
 * Features:<br> <b> - IOS native decimalPad keyboard for user input</b>
            <br> <b> - Higher and lower priority mathematical operators</b>
            <br> <b> - Use previous result as value in next term</b>
+           <br> <b> - Landscape-Orientation support</b>
+           <br> <b> - Dynamic handeling of smaller screens</b>
 * Creator: <br> <b>Nikita Hans</b>
