@@ -12,10 +12,22 @@ class CalculatorViewController: UIViewController {
     @IBOutlet weak var resultLabel: UILabel!
     @IBOutlet weak var resultTextField: UITextField!
     @IBOutlet weak var termTextField: UITextField!
+    @IBOutlet weak var termTextFieldHeightConstraint: NSLayoutConstraint!
     
     private let numPadToolBar = UIToolbar()
     private var calculatorViewModel: CalculatorViewModelProtocol?
     private var needsReset = false
+    private var isSmallDevice: Bool?
+    private var coreMenuItems: [UIBarButtonItem] {
+        return [
+            UIBarButtonItem(title: userActionString(from: .clear), style: .done, target: self, action: #selector(clear)),
+            UIBarButtonItem(title: userActionString(from: .plus), style: .plain, target: self, action: #selector(plus)),
+            UIBarButtonItem(title: userActionString(from: .minus), style: .plain, target: self, action: #selector(minus)),
+            UIBarButtonItem(title: userActionString(from: .multiply), style: .plain, target: self, action: #selector(multiply)),
+            UIBarButtonItem(title: userActionString(from: .divide), style: .plain, target: self, action: #selector(divide)),
+            UIBarButtonItem(title: userActionString(from: .calculate), style: .done, target: self, action: #selector(calc))
+        ]
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,25 +35,23 @@ class CalculatorViewController: UIViewController {
         resultLabel.text = "Calculator"
         resultTextField.isEnabled = false
         createDecimalPad()
+        isSmallDevice = (UIScreen.main.bounds.width <= UIScreen.main.bounds.height ? UIScreen.main.bounds.height : UIScreen.main.bounds.width) < 650
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        adjustLayoutFor(newSize: UIScreen.main.bounds)
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        adjustLayoutFor(newSize: CGRect(origin: CGPoint(), size: size))
+    }
+
     private func createDecimalPad() {
         termTextField.keyboardType = .decimalPad
-        setUpNumPadToolBar()
+        numPadToolBar.sizeToFit()
         termTextField.inputAccessoryView = numPadToolBar
         termTextField.becomeFirstResponder()
-    }
-    
-    private func setUpNumPadToolBar() {
-        numPadToolBar.sizeToFit()
-        numPadToolBar.items = [
-            UIBarButtonItem(title: buttonLabel(.clear), style: .done, target: self, action: #selector(clear)),
-            UIBarButtonItem(title: buttonLabel(.plus), style: .plain, target: self, action: #selector(plus)),
-            UIBarButtonItem(title: buttonLabel(.minus), style: .plain, target: self, action: #selector(minus)),
-            UIBarButtonItem(title: buttonLabel(.multiply), style: .plain, target: self, action: #selector(multiply)),
-            UIBarButtonItem(title: buttonLabel(.divide), style: .plain, target: self, action: #selector(divide)),
-            UIBarButtonItem(title: buttonLabel(.calculate), style: .done, target: self, action: #selector(calc))
-        ]
     }
 
     //MARK: User Button Functions
@@ -52,19 +62,19 @@ class CalculatorViewController: UIViewController {
         viewModel.clear()
         needsReset = false
     }
-    
+
     @objc func plus() {
         guard let viewModel = calculatorViewModel else { return }
         viewModel.addToTerm(userInput: termTextField.text, mathAction: .plus)
         updateTextViews(.plus)
     }
-    
+
     @objc func minus() {
         guard let viewModel = calculatorViewModel else { return }
         viewModel.addToTerm(userInput: termTextField.text, mathAction: .minus)
         updateTextViews(.minus)
     }
-    
+
     @objc func multiply() {
         guard let viewModel = calculatorViewModel else { return }
         viewModel.addToTerm(userInput: termTextField.text, mathAction: .multiply)
@@ -76,7 +86,7 @@ class CalculatorViewController: UIViewController {
         viewModel.addToTerm(userInput: termTextField.text, mathAction: .divide)
         updateTextViews(.divide)
     }
-    
+
     @objc func calc() {
         guard let viewModel = calculatorViewModel else { return }
         viewModel.addToTerm(userInput: termTextField.text, mathAction: .calculate)
@@ -86,8 +96,8 @@ class CalculatorViewController: UIViewController {
         termTextField.text = "\(viewModel.calculate())"
         needsReset = true
     }
-    
-    //MARK: TextViewUpdate
+
+    //MARK: UI Updates
     private func updateTextViews(_ action: UserAction) {
         if needsReset {
             resultTextField.text = ""
@@ -96,34 +106,49 @@ class CalculatorViewController: UIViewController {
         guard let text = termTextField.text else { return }
         termTextField.text = ""
         if let previous = resultTextField.text, previous != "" {
-            resultTextField.text = "\(previous) \(text) \(symbol(from: action))"
+            resultTextField.text = "\(previous) \(text) \(userActionString(from: action))"
         } else {
-            resultTextField.text = "\(text) \(symbol(from: action))"
+            resultTextField.text = "\(text) \(userActionString(from: action))"
         }
     }
-    
-    // MARK: UserAction to String Helper Functions
-    private func symbol(from action: UserAction) -> String {
-        return buttonLabel(action).trimmingCharacters(in: .whitespaces)
+
+    private func adjustLayoutFor(newSize newDimensions: CGRect) {
+        updateSpacingForNumPadToolBar(screenWidth: newDimensions.width)
+        if isSmallDevice ?? false {
+            termTextFieldHeightConstraint.constant = CGFloat(UIDevice.current.orientation.isLandscape ? 0 : 50)
+        }
     }
 
-    private func buttonLabel(_ action: UserAction) -> String {
-        let spacing = "     "
+    private func updateSpacingForNumPadToolBar(screenWidth: CGFloat) {
+        let spacingSize = screenWidth/13
+        let spacing = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.fixedSpace, target: nil, action: nil)
+        spacing.width = CGFloat(spacingSize)
+        var spacedItems = [UIBarButtonItem]([spacing])
+        for item in coreMenuItems {
+            spacedItems.append(item)
+            spacedItems.append(spacing)
+        }
+        numPadToolBar.items = nil
+        numPadToolBar.items = spacedItems
+    }
+
+    // MARK: UserAction to String Helper
+    private func userActionString(from action: UserAction) -> String {
         switch action {
         case .clear:
-            return "\(spacing)reset"
+            return "c"
         case .plus:
-            return "\(spacing)+"
+            return "+"
         case .minus:
-            return "\(spacing)-"
+            return "-"
         case .multiply:
-            return "\(spacing)x"
+            return "x"
         case .divide:
-            return "\(spacing):"
+            return ":"
         case .calculate:
-            return "\(spacing)="
+            return "="
         case .error:
-            return "\(spacing)ERROR"
+            return "ERROR"
         }
     }
 }

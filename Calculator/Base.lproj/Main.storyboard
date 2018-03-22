@@ -63,6 +63,7 @@
                         <outlet property="resultLabel" destination="Lmb-LS-Pm4" id="u3R-2j-ZzW"/>
                         <outlet property="resultTextField" destination="Ek1-4N-RWa" id="UOt-tn-puS"/>
                         <outlet property="termTextField" destination="VyQ-fQ-NzC" id="NbF-XR-b2A"/>
+                        <outlet property="termTextFieldHeightConstraint" destination="KuM-jU-ShC" id="qeU-he-lIk"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
