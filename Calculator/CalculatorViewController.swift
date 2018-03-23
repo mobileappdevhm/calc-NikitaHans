@@ -16,7 +16,7 @@ class CalculatorViewController: UIViewController {
     //MARK: Outlets - UIElementConstraints
     @IBOutlet weak var labelToTopSafeAreaConstraint: NSLayoutConstraint!
     @IBOutlet weak var labelHeightConstraint: NSLayoutConstraint!
-    
+
     //MARK: Class private variables
     private let numPadToolBar = UIToolbar()
     private var calculatorViewModel: CalculatorViewModelProtocol?
@@ -35,13 +35,14 @@ class CalculatorViewController: UIViewController {
             UIBarButtonItem(title: userActionString(from: .calculate), style: .done, target: self, action: #selector(calc))
         ]
     }
+
     //MARK: Override Functions
     override func viewDidLoad() {
         super.viewDidLoad()
         calculatorViewModel = CalculatorViewModel()
         setUpStyling()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         adjustLayoutFor(newSize: UIScreen.main.bounds)
@@ -165,5 +166,4 @@ class CalculatorViewController: UIViewController {
         }
     }
 }
-
 

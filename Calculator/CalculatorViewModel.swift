@@ -51,7 +51,7 @@ class CalculatorViewModel: CalculatorViewModelProtocol {
                 var result: Double = 0
                 var prevValue: Double?
                 var nextOp: UserAction = .clear
-                //MARK: high Priority calc
+                //high Priority calc
                 for elem in term {
                     var currentElement = elem
                     if let previous = prevValue {
@@ -73,7 +73,7 @@ class CalculatorViewModel: CalculatorViewModelProtocol {
                         lowPriorityTerm.append(currentElement)
                     }
                 }
-                //MARK: low Priority calc
+                //low Priority calc
                 for (index,elem) in lowPriorityTerm.enumerated() {
                     if index != 0 {
                         switch nextOp{
@@ -87,7 +87,6 @@ class CalculatorViewModel: CalculatorViewModelProtocol {
                             clear()
                         default:
                             print("found non math op in low priority ops term")
-                            break
                         }
                     } else {
                         if elem.usrActn == .error {
