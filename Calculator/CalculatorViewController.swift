@@ -9,15 +9,22 @@
 import UIKit
 
 class CalculatorViewController: UIViewController {
+    //MARK: Outlets - UIElements
     @IBOutlet weak var resultLabel: UILabel!
     @IBOutlet weak var resultTextField: UITextField!
     @IBOutlet weak var termTextField: UITextField!
-    @IBOutlet weak var termTextFieldHeightConstraint: NSLayoutConstraint!
+    //MARK: Outlets - UIElementConstraints
+    @IBOutlet weak var labelToTopSafeAreaConstraint: NSLayoutConstraint!
+    @IBOutlet weak var labelHeightConstraint: NSLayoutConstraint!
     
+    //MARK: Class private variables
     private let numPadToolBar = UIToolbar()
     private var calculatorViewModel: CalculatorViewModelProtocol?
     private var needsReset = false
-    private var isSmallDevice: Bool?
+    private var isSmallDevice: Bool {
+        let longestSide = UIScreen.main.bounds.width <= UIScreen.main.bounds.height ? UIScreen.main.bounds.height : UIScreen.main.bounds.width
+        return longestSide < 650
+    }
     private var coreMenuItems: [UIBarButtonItem] {
         return [
             UIBarButtonItem(title: userActionString(from: .clear), style: .done, target: self, action: #selector(clear)),
@@ -28,14 +35,11 @@ class CalculatorViewController: UIViewController {
             UIBarButtonItem(title: userActionString(from: .calculate), style: .done, target: self, action: #selector(calc))
         ]
     }
-    
+    //MARK: Override Functions
     override func viewDidLoad() {
         super.viewDidLoad()
         calculatorViewModel = CalculatorViewModel()
-        resultLabel.text = "Calculator"
-        resultTextField.isEnabled = false
-        createDecimalPad()
-        isSmallDevice = (UIScreen.main.bounds.width <= UIScreen.main.bounds.height ? UIScreen.main.bounds.height : UIScreen.main.bounds.width) < 650
+        setUpStyling()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -45,6 +49,14 @@ class CalculatorViewController: UIViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         adjustLayoutFor(newSize: CGRect(origin: CGPoint(), size: size))
+    }
+
+    //MARK: Styling Functions
+    private func setUpStyling() {
+        resultLabel.text = "Calculator"
+        resultTextField.isEnabled = false
+        createDecimalPad()
+        termTextField.tintColor = UIColor.white
     }
 
     private func createDecimalPad() {
@@ -114,13 +126,14 @@ class CalculatorViewController: UIViewController {
 
     private func adjustLayoutFor(newSize newDimensions: CGRect) {
         updateSpacingForNumPadToolBar(screenWidth: newDimensions.width)
-        if isSmallDevice ?? false {
-            termTextFieldHeightConstraint.constant = CGFloat(UIDevice.current.orientation.isLandscape ? 0 : 50)
+        if isSmallDevice  {
+            labelToTopSafeAreaConstraint.constant = CGFloat(UIDevice.current.orientation.isLandscape ? 0 : 20)
+            labelHeightConstraint.constant = CGFloat(UIDevice.current.orientation.isLandscape ? 0 : 50)
         }
     }
 
     private func updateSpacingForNumPadToolBar(screenWidth: CGFloat) {
-        let spacingSize = screenWidth/13
+        let spacingSize = screenWidth/CGFloat(coreMenuItems.count*2)
         let spacing = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.fixedSpace, target: nil, action: nil)
         spacing.width = CGFloat(spacingSize)
         var spacedItems = [UIBarButtonItem]([spacing])
@@ -132,7 +145,7 @@ class CalculatorViewController: UIViewController {
         numPadToolBar.items = spacedItems
     }
 
-    // MARK: UserAction to String Helper
+    // MARK: Helper Functions
     private func userActionString(from action: UserAction) -> String {
         switch action {
         case .clear:

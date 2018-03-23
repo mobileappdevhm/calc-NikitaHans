@@ -30,7 +30,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ek1-4N-RWa">
-                                        <rect key="frame" x="0.0" y="30" width="375" height="30"/>
+                                        <rect key="frame" x="0.0" y="30" width="375" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="KuM-jU-ShC"/>
                                         </constraints>
@@ -39,7 +39,7 @@
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="VyQ-fQ-NzC">
-                                        <rect key="frame" x="0.0" y="70" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="90" width="375" height="30"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="eGD-aQ-jis"/>
                                         </constraints>
@@ -60,10 +60,11 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="labelHeightConstraint" destination="0Ub-Jd-Jmt" id="9Ro-B8-VxA"/>
+                        <outlet property="labelToTopSafeAreaConstraint" destination="eKX-gL-Mx8" id="raA-Mx-QfM"/>
                         <outlet property="resultLabel" destination="Lmb-LS-Pm4" id="u3R-2j-ZzW"/>
                         <outlet property="resultTextField" destination="Ek1-4N-RWa" id="UOt-tn-puS"/>
                         <outlet property="termTextField" destination="VyQ-fQ-NzC" id="NbF-XR-b2A"/>
-                        <outlet property="termTextFieldHeightConstraint" destination="KuM-jU-ShC" id="qeU-he-lIk"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
